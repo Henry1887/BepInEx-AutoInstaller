@@ -6,6 +6,7 @@ This source code is licensed under the BSD-style license found in the
 LICENSE file in the root directory of this source tree. 
 """
 
+import contextlib
 import sys
 import zipfile
 import os
@@ -112,8 +113,8 @@ def download_universaldemosaic():
         console.print("DumbRendererDemosaic is already installed!",
                       style="yellow on black")
         return
-    arch = determine_arch()
-    os.mkdir("Bepinex/plugins")
+    with contextlib.suppress(FileExistsError):
+        os.mkdir("Bepinex/plugins")
     if arch in ["mono_64", "mono_86"]:
         install_universaldemosaic_9(
             "https://github.com/ManlyMarco/UniversalUnityDemosaics/releases/download/v1.5/UniversalUnityDemosaics_BepInEx5_v1.5.zip",
@@ -311,14 +312,16 @@ def install_TextureReplacer():
         download_url("https://attachments.f95zone.to/2023/01/2332348_Texture_Replacer_v1.0.4.1.zip", "Texture_Replacer.zip")
         unzip("Texture_Replacer.zip")
         os.system("del Texture_Replacer.zip")
-        os.mkdir("BepInEx/plugins")
+        with contextlib.suppress(FileExistsError):
+            os.mkdir("BepInEx/plugins")
         shutil.move("Texture_Replacer.dll", "BepInEx/plugins")
         os.system("del Texture_Replacer_il2cpp.dll")
     elif arch in ["il2cpp_64", "il2cpp_86"]:
         download_url("https://attachments.f95zone.to/2023/01/2332348_Texture_Replacer_v1.0.4.1.zip", "Texture_Replacer.zip")
         unzip("Texture_Replacer.zip")
         os.system("del Texture_Replacer.zip")
-        os.mkdir("BepInEx/plugins")
+        with contextlib.suppress(FileExistsError):
+            os.mkdir("BepInEx/plugins")
         shutil.move("Texture_Replacer_il2cpp.dll", "BepInEx/plugins")
         os.system("del Texture_Replacer.dll")
     else:

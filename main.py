@@ -6,6 +6,7 @@ This source code is licensed under the BSD-style license found in the
 LICENSE file in the root directory of this source tree. 
 """
 
+
 import contextlib
 import sys
 import zipfile
@@ -28,61 +29,38 @@ except Exception:
         for file in files
         if file.endswith(".exe") and os.path.exists(file.replace(".exe", "") + "_Data")
     ]
-    if len(games_in_cur_dir) == 1:
-        game_exe = os.path.join(os.getcwd(), games_in_cur_dir[0])
-    elif len(games_in_cur_dir) > 1:
-        console.print("Multiple games found in this directory!",
-                      style="red on black")
-        console.print("Automatic Detection is not possible.",
-                      style="red on black")
-        input("Press Enter to continue...")
-        sys.exit(0)
-    else:
-        console.print("You have to specify the games exe file.",
+    match len(games_in_cur_dir):
+        case 0:
+            console.print("You have to specify the games exe file.",
                     style="red on black")
-        input("Press Enter to continue...")
-        sys.exit(0)
+            input("Press Enter to continue...")
+            sys.exit(0)
+        case 1:
+            game_exe = os.path.join(os.getcwd(), games_in_cur_dir[0])
+        case _:
+            console.print("Multiple games found in this directory!",
+                      style="red on black")
+            console.print("Automatic Detection is not possible.",
+                        style="red on black")
+            input("Press Enter to continue...")
+            sys.exit(0)
 if not os.path.isfile(game_exe):
     console.print("Game not found!", style="red on black")
     input("Press Enter to continue...")
     sys.exit(0)
 
-
-def get_bepinexIL2CPP64() -> str:
-    return "https://builds.bepinex.dev/projects/bepinex_be/577/BepInEx_UnityIL2CPP_x64_ec79ad0_6.0.0-be.577.zip"
-
-def get_bepinexxIL2CPP86() -> str:
-    return "https://builds.bepinex.dev/projects/bepinex_be/577/BepInEx_UnityIL2CPP_x86_ec79ad0_6.0.0-be.577.zip"
-
-def get_bepinex64() -> str:
-    return "https://github.com/BepInEx/BepInEx/releases/download/v5.4.21/BepInEx_x64_5.4.21.0.zip"
-
-def get_bepinex86() -> str:
-    return "https://github.com/BepInEx/BepInEx/releases/download/v5.4.21/BepInEx_x86_5.4.21.0.zip"
-
-def get_bepinex6IL2CPP64() -> str:
-    return "https://github.com/BepInEx/BepInEx/releases/download/v6.0.0-pre.1/BepInEx_UnityIL2CPP_x64_6.0.0-pre.1.zip"
-
-def get_bepinex6IL2CPP86() -> str:
-    return "https://github.com/BepInEx/BepInEx/releases/download/v6.0.0-pre.1/BepInEx_UnityIL2CPP_x86_6.0.0-pre.1.zip"
-
-def get_bepinex664() -> str:
-    return "https://github.com/BepInEx/BepInEx/releases/download/v6.0.0-pre.1/BepInEx_UnityMono_x64_6.0.0-pre.1.zip"
-
-def get_bepinex686() -> str:
-    return "https://github.com/BepInEx/BepInEx/releases/download/v6.0.0-pre.1/BepInEx_UnityMono_x86_6.0.0-pre.1.zip"
-
-def get_bepinexBEBuild64() -> str:
-    return "https://builds.bepinex.dev/projects/bepinex_be/668/BepInEx-Unity.Mono-win-x64-6.0.0-be.668%2B46e297f.zip"
-
-def get_bepinexBEBuild86() -> str:
-    return "https://builds.bepinex.dev/projects/bepinex_be/668/BepInEx-Unity.Mono-win-x86-6.0.0-be.668%2B46e297f.zip"
-
-def get_bepinexBEBuildIL2CPP64() -> str:
-    return "https://builds.bepinex.dev/projects/bepinex_be/668/BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.668%2B46e297f.zip"
-
-def get_bepinexBEBuildIL2CPP86() -> str:
-    return "https://builds.bepinex.dev/projects/bepinex_be/668/BepInEx-Unity.IL2CPP-win-x86-6.0.0-be.668%2B46e297f.zip"
+BEPINEXIL2CPP64 = "https://builds.bepinex.dev/projects/bepinex_be/577/BepInEx_UnityIL2CPP_x64_ec79ad0_6.0.0-be.577.zip"
+BEPINEXIL2CPP86 = "https://builds.bepinex.dev/projects/bepinex_be/577/BepInEx_UnityIL2CPP_x86_ec79ad0_6.0.0-be.577.zip"
+BEPINEX64 = "https://github.com/BepInEx/BepInEx/releases/download/v5.4.21/BepInEx_x64_5.4.21.0.zip"
+BEPINEX86 = "https://github.com/BepInEx/BepInEx/releases/download/v5.4.21/BepInEx_x86_5.4.21.0.zip"
+BEPINEX6IL2CPP64 = "https://github.com/BepInEx/BepInEx/releases/download/v6.0.0-pre.1/BepInEx_UnityIL2CPP_x64_6.0.0-pre.1.zip"
+BEPINEX6IL2CPP86 = "https://github.com/BepInEx/BepInEx/releases/download/v6.0.0-pre.1/BepInEx_UnityIL2CPP_x86_6.0.0-pre.1.zip"
+BEPINEX664 = "https://github.com/BepInEx/BepInEx/releases/download/v6.0.0-pre.1/BepInEx_UnityMono_x64_6.0.0-pre.1.zip"
+BEPINEX686 = "https://github.com/BepInEx/BepInEx/releases/download/v6.0.0-pre.1/BepInEx_UnityMono_x86_6.0.0-pre.1.zip"
+BEPINEXBEBUILD64 = "https://builds.bepinex.dev/projects/bepinex_be/668/BepInEx-Unity.Mono-win-x64-6.0.0-be.668%2B46e297f.zip"
+BEPINEXBEBUILD86 = "https://builds.bepinex.dev/projects/bepinex_be/668/BepInEx-Unity.Mono-win-x86-6.0.0-be.668%2B46e297f.zip"
+BEPINEXBEBUILDIL2CPP64 = "https://builds.bepinex.dev/projects/bepinex_be/668/BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.668%2B46e297f.zip"
+BEPINEXBEBUILDIL2CPP86 = "https://builds.bepinex.dev/projects/bepinex_be/668/BepInEx-Unity.IL2CPP-win-x86-6.0.0-be.668%2B46e297f.zip"
 
 def determine_arch() -> str:
     il2cpp = bool(os.path.isfile("GameAssembly.dll"))
@@ -148,19 +126,19 @@ def download_bepinex6():
                       style="yellow on black")
         return
     if arch == "il2cpp_64":
-        download_url(get_bepinex6IL2CPP64(), "Bepinex.zip")
+        download_url(BEPINEX6IL2CPP64, "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     elif arch == "il2cpp_86":
-        download_url(get_bepinex6IL2CPP86(), "Bepinex.zip")
+        download_url(BEPINEX6IL2CPP86, "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     elif arch == "mono_64":
-        download_url(get_bepinex664(), "Bepinex.zip")
+        download_url(BEPINEX664, "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     elif arch == "mono_86":
-        download_url(get_bepinex686(), "Bepinex.zip")
+        download_url(BEPINEX686, "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     else:
@@ -174,19 +152,19 @@ def download_bepinex():
                       style="yellow on black")
         return
     if arch == "mono_64":
-        download_url(get_bepinex64(), "Bepinex.zip")
+        download_url(BEPINEX64, "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     elif arch == "mono_86":
-        download_url(get_bepinex86(), "Bepinex.zip")
+        download_url(BEPINEX86, "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     elif arch == "il2cpp_64":
-        download_url(get_bepinexIL2CPP64(), "Bepinex.zip")
+        download_url(BEPINEXIL2CPP64, "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     elif arch == "il2cpp_86":
-        download_url(get_bepinexxIL2CPP86(), "Bepinex.zip")
+        download_url(BEPINEXIL2CPP86, "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     else:
@@ -262,19 +240,19 @@ def install_BEBuild6():
         console.print("Bepinex is already installed!", style="yellow on black")
         return
     if arch == "mono_64":
-        download_url(get_bepinexBEBuild64(), "Bepinex.zip")
+        download_url(BEPINEXBEBUILD64, "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     elif arch == "mono_86":
-        download_url(get_bepinexBEBuild86(), "Bepinex.zip")
+        download_url(BEPINEXBEBUILD86, "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     elif arch == "il2cpp_64":
-        download_url(get_bepinexBEBuildIL2CPP64(), "Bepinex.zip")
+        download_url(BEPINEXBEBUILDIL2CPP64, "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     elif arch == "il2cpp_86":
-        download_url(get_bepinexBEBuildIL2CPP86, "Bepinex.zip")
+        download_url(BEPINEXBEBUILDIL2CPP86, "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     else:

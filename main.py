@@ -7,6 +7,7 @@ LICENSE file in the root directory of this source tree.
 """
 
 
+
 import contextlib
 import sys
 import zipfile
@@ -14,6 +15,7 @@ import os
 import shutil
 import win32file
 import requests
+import json
 from rich.console import Console
 
 console = Console()
@@ -27,11 +29,12 @@ except Exception:
     games_in_cur_dir = [
         file
         for file in files
-        if file.endswith(".exe") and os.path.exists(file.replace(".exe", "") + "_Data")
+        if file.endswith(".exe")
+        and os.path.exists(file.replace(".exe", "") + "_Data")
     ]
     match len(games_in_cur_dir):
         case 0:
-            console.print("You have to specify the games exe file.",
+            console.print("Automatic Detection could not find any Game in the current Directory",
                     style="red on black")
             input("Press Enter to continue...")
             sys.exit(0)
@@ -49,18 +52,35 @@ if not os.path.isfile(game_exe):
     input("Press Enter to continue...")
     sys.exit(0)
 
-BEPINEXIL2CPP64 = "https://builds.bepinex.dev/projects/bepinex_be/577/BepInEx_UnityIL2CPP_x64_ec79ad0_6.0.0-be.577.zip"
-BEPINEXIL2CPP86 = "https://builds.bepinex.dev/projects/bepinex_be/577/BepInEx_UnityIL2CPP_x86_ec79ad0_6.0.0-be.577.zip"
-BEPINEX64 = "https://github.com/BepInEx/BepInEx/releases/download/v5.4.21/BepInEx_x64_5.4.21.0.zip"
-BEPINEX86 = "https://github.com/BepInEx/BepInEx/releases/download/v5.4.21/BepInEx_x86_5.4.21.0.zip"
-BEPINEX6IL2CPP64 = "https://github.com/BepInEx/BepInEx/releases/download/v6.0.0-pre.1/BepInEx_UnityIL2CPP_x64_6.0.0-pre.1.zip"
-BEPINEX6IL2CPP86 = "https://github.com/BepInEx/BepInEx/releases/download/v6.0.0-pre.1/BepInEx_UnityIL2CPP_x86_6.0.0-pre.1.zip"
-BEPINEX664 = "https://github.com/BepInEx/BepInEx/releases/download/v6.0.0-pre.1/BepInEx_UnityMono_x64_6.0.0-pre.1.zip"
-BEPINEX686 = "https://github.com/BepInEx/BepInEx/releases/download/v6.0.0-pre.1/BepInEx_UnityMono_x86_6.0.0-pre.1.zip"
-BEPINEXBEBUILD64 = "https://builds.bepinex.dev/projects/bepinex_be/668/BepInEx-Unity.Mono-win-x64-6.0.0-be.668%2B46e297f.zip"
-BEPINEXBEBUILD86 = "https://builds.bepinex.dev/projects/bepinex_be/668/BepInEx-Unity.Mono-win-x86-6.0.0-be.668%2B46e297f.zip"
-BEPINEXBEBUILDIL2CPP64 = "https://builds.bepinex.dev/projects/bepinex_be/668/BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.668%2B46e297f.zip"
-BEPINEXBEBUILDIL2CPP86 = "https://builds.bepinex.dev/projects/bepinex_be/668/BepInEx-Unity.IL2CPP-win-x86-6.0.0-be.668%2B46e297f.zip"
+if os.path.isfile("AutoInstaller-config.json"):
+    with open("AutoInstaller-config.json", "r") as Config:
+        links = json.load(Config)
+else:
+    links = {
+        "BEPINEXIL2CPP64": "https://builds.bepinex.dev/projects/bepinex_be/577/BepInEx_UnityIL2CPP_x64_ec79ad0_6.0.0-be.577.zip",
+        "BEPINEXIL2CPP86": "https://builds.bepinex.dev/projects/bepinex_be/577/BepInEx_UnityIL2CPP_x86_ec79ad0_6.0.0-be.577.zip",
+        "BEPINEX64": "https://github.com/BepInEx/BepInEx/releases/download/v5.4.21/BepInEx_x64_5.4.21.0.zip",
+        "BEPINEX86": "https://github.com/BepInEx/BepInEx/releases/download/v5.4.21/BepInEx_x86_5.4.21.0.zip",
+        "BEPINEX6IL2CPP64": "https://github.com/BepInEx/BepInEx/releases/download/v6.0.0-pre.1/BepInEx_UnityIL2CPP_x64_6.0.0-pre.1.zip",
+        "BEPINEX6IL2CPP86": "https://github.com/BepInEx/BepInEx/releases/download/v6.0.0-pre.1/BepInEx_UnityIL2CPP_x86_6.0.0-pre.1.zip",
+        "BEPINEX664": "https://github.com/BepInEx/BepInEx/releases/download/v6.0.0-pre.1/BepInEx_UnityMono_x64_6.0.0-pre.1.zip",
+        "BEPINEX686": "https://github.com/BepInEx/BepInEx/releases/download/v6.0.0-pre.1/BepInEx_UnityMono_x86_6.0.0-pre.1.zip",
+        "BEPINEXBEBUILD64": "https://builds.bepinex.dev/projects/bepinex_be/670/BepInEx-Unity.Mono-win-x64-6.0.0-be.670%2B42a6727.zip",
+        "BEPINEXBEBUILD86": "https://builds.bepinex.dev/projects/bepinex_be/670/BepInEx-Unity.Mono-win-x86-6.0.0-be.670%2B42a6727.zip",
+        "BEPINEXBEBUILDIL2CPP64": "https://builds.bepinex.dev/projects/bepinex_be/670/BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.670%2B42a6727.zip",
+        "BEPINEXBEBUILDIL2CPP86": "https://builds.bepinex.dev/projects/bepinex_be/670/BepInEx-Unity.IL2CPP-win-x86-6.0.0-be.670%2B42a6727.zip",
+        "UNIVERSALUNITYDEMOSAIC": "https://github.com/ManlyMarco/UniversalUnityDemosaics/releases/download/v1.5/UniversalUnityDemosaics_BepInEx5_v1.5.zip",
+        "UNIVERSALUNITYDEMOSAICIL2CPP": "https://github.com/ManlyMarco/UniversalUnityDemosaics/releases/download/v1.5/UniversalUnityDemosaics_BepInEx6_IL2CPP_v1.5.zip",
+        "AUTOTRANSLATOR": "https://github.com/bbepis/XUnity.AutoTranslator/releases/download/v5.0.0/XUnity.AutoTranslator-BepInEx-5.0.0.zip",
+        "AUTOTRANSLATORIL2CPP": "https://github.com/bbepis/XUnity.AutoTranslator/releases/download/v5.0.0/XUnity.AutoTranslator-BepInEx-IL2CPP-5.0.0.zip",
+        "UNITYEXPLORERBE5": "https://github.com/sinai-dev/UnityExplorer/releases/latest/download/UnityExplorer.BepInEx5.Mono.zip",
+        "UNITYEXPLORERBE5IL2CPP": "https://github.com/sinai-dev/UnityExplorer/releases/latest/download/UnityExplorer.BepInEx.Il2Cpp.zip",
+        "UNITYEXPLORERBE6": "https://github.com/sinai-dev/UnityExplorer/releases/download/4.9.0/UnityExplorer.BepInEx6.Mono.zip",
+        "UNITYEXPLORERBE6IL2CPP": "https://github.com/sinai-dev/UnityExplorer/releases/download/4.9.0/UnityExplorer.BepInEx.IL2CPP.zip",
+        "TEXTUREREPLACER": "https://attachments.f95zone.to/2023/06/2692158_Texture_Replacer_plugin_v1.0.5.1.zip"
+    }
+    with open("AutoInstaller-config.json", "w") as Config:
+        json.dump(links, Config)
 
 def determine_arch() -> str:
     il2cpp = bool(os.path.isfile("GameAssembly.dll"))
@@ -95,7 +115,7 @@ def download_universaldemosaic():
         os.mkdir("Bepinex/plugins")
     if arch in ["mono_64", "mono_86"]:
         install_universaldemosaic_9(
-            "https://github.com/ManlyMarco/UniversalUnityDemosaics/releases/download/v1.5/UniversalUnityDemosaics_BepInEx5_v1.5.zip",
+            links["UNIVERSALUNITYDEMOSAIC"],
             "DumbRendererDemosaic.dll",
         )
         os.system("del DumbTypeDemosaic.dll")
@@ -104,7 +124,7 @@ def download_universaldemosaic():
         os.system("del CombinedMeshDemosaic.dll")
     elif arch in ["il2cpp_64", "il2cpp_86"]:
         install_universaldemosaic_9(
-            "https://github.com/ManlyMarco/UniversalUnityDemosaics/releases/download/v1.5/UniversalUnityDemosaics_BepInEx6_IL2CPP_v1.5.zip",
+            links["UNIVERSALUNITYDEMOSAICIL2CPP"],
             "DumbRendererDemosaicIl2Cpp.dll",
         )
     else:
@@ -126,19 +146,19 @@ def download_bepinex6():
                       style="yellow on black")
         return
     if arch == "il2cpp_64":
-        download_url(BEPINEX6IL2CPP64, "Bepinex.zip")
+        download_url(links["BEPINEX6IL2CPP64"], "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     elif arch == "il2cpp_86":
-        download_url(BEPINEX6IL2CPP86, "Bepinex.zip")
+        download_url(links["BEPINEX6IL2CPP86"], "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     elif arch == "mono_64":
-        download_url(BEPINEX664, "Bepinex.zip")
+        download_url(links["BEPINEX664"], "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     elif arch == "mono_86":
-        download_url(BEPINEX686, "Bepinex.zip")
+        download_url(links["BEPINEX686"], "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     else:
@@ -152,19 +172,19 @@ def download_bepinex():
                       style="yellow on black")
         return
     if arch == "mono_64":
-        download_url(BEPINEX64, "Bepinex.zip")
+        download_url(links["BEPINEX64"], "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     elif arch == "mono_86":
-        download_url(BEPINEX86, "Bepinex.zip")
+        download_url(links["BEPINEX86"], "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     elif arch == "il2cpp_64":
-        download_url(BEPINEXIL2CPP64, "Bepinex.zip")
+        download_url(links["BEPINEXIL2CPP64"], "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     elif arch == "il2cpp_86":
-        download_url(BEPINEXIL2CPP86, "Bepinex.zip")
+        download_url(links["BEPINEXIL2CPP86"], "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     else:
@@ -184,11 +204,11 @@ def download_autotranslator():
         return
     if arch in ["mono_64", "mono_86"]:
         install_autotranslator_7(
-            "https://github.com/bbepis/XUnity.AutoTranslator/releases/download/v5.0.0/XUnity.AutoTranslator-BepInEx-5.0.0.zip"
+            links["AUTOTRANSLATOR"]
         )
     elif arch in ["il2cpp_64", "il2cpp_86"]:
         install_autotranslator_7(
-            "https://github.com/bbepis/XUnity.AutoTranslator/releases/download/v5.0.0/XUnity.AutoTranslator-BepInEx-IL2CPP-5.0.0.zip"
+            links["AUTOTRANSLATORIL2CPP"]
         )
     else:
         sys.exit("Something went wrong***")
@@ -208,13 +228,13 @@ def download_unityexplorer():
     try:
         if arch in ["mono_64", "mono_86"]:
             install_unityexplorer_8(
-                "https://github.com/sinai-dev/UnityExplorer/releases/latest/download/UnityExplorer.BepInEx5.Mono.zip",
+                links["UNITYEXPLORERBE5"],
                 "plugins/sinai-dev-UnityExplorer/",
                 "plugins",
             )
         elif arch in ["il2cpp_64", "il2cpp_86"]:
             install_unityexplorer_8(
-                "https://github.com/sinai-dev/UnityExplorer/releases/latest/download/UnityExplorer.BepInEx.Il2Cpp.zip",
+                links["UNITYEXPLORERBE5IL2CPP"],
                 "UnityExplorer.BepInEx.IL2CPP/plugins/sinai-dev-UnityExplorer/",
                 "UnityExplorer.BepInEx.IL2CPP",
             )
@@ -240,19 +260,19 @@ def install_BEBuild6():
         console.print("Bepinex is already installed!", style="yellow on black")
         return
     if arch == "mono_64":
-        download_url(BEPINEXBEBUILD64, "Bepinex.zip")
+        download_url(links["BEPINEXBEBUILD64"], "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     elif arch == "mono_86":
-        download_url(BEPINEXBEBUILD86, "Bepinex.zip")
+        download_url(links["BEPINEXBEBUILD86"], "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     elif arch == "il2cpp_64":
-        download_url(BEPINEXBEBUILDIL2CPP64, "Bepinex.zip")
+        download_url(links["BEPINEXBEBUILDIL2CPP64"], "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     elif arch == "il2cpp_86":
-        download_url(BEPINEXBEBUILDIL2CPP86, "Bepinex.zip")
+        download_url(links["BEPINEXBEBUILDIL2CPP86"], "Bepinex.zip")
         unzip("Bepinex.zip")
         os.system("del Bepinex.zip")
     else:
@@ -265,13 +285,13 @@ def install_UnityExplorer6():
                       style="yellow on black")
         return
     if arch in ["mono_64", "mono_86"]:
-        download_url("https://github.com/sinai-dev/UnityExplorer/releases/download/4.9.0/UnityExplorer.BepInEx6.Mono.zip", "UnityExplorer.zip")
+        download_url(links["UNITYEXPLORERBE6"], "UnityExplorer.zip")
         unzip("UnityExplorer.zip")
         os.system("del UnityExplorer.zip")
         shutil.move("plugins/sinai-dev-UnityExplorer", "BepInEx/plugins")
         os.rmdir("plugins")
     elif arch in ["il2cpp_64", "il2cpp_86"]:
-        download_url("https://github.com/sinai-dev/UnityExplorer/releases/download/4.9.0/UnityExplorer.BepInEx.IL2CPP.zip", "UnityExplorer.zip")
+        download_url(links["UNITYEXPLORERBE6IL2CPP"], "UnityExplorer.zip")
         unzip("UnityExplorer.zip")
         os.system("del UnityExplorer.zip")
         shutil.move("UnityExplorer.BepInEx.IL2CPP/plugins/sinai-dev-UnityExplorer", "BepInEx/plugins")
@@ -287,7 +307,7 @@ def install_TextureReplacer():
                       style="yellow on black")
         return
     if arch in ["mono_64", "mono_86"]:
-        download_url("https://attachments.f95zone.to/2023/01/2332348_Texture_Replacer_v1.0.4.1.zip", "Texture_Replacer.zip")
+        download_url(links["TEXTUREREPLACER"], "Texture_Replacer.zip")
         unzip("Texture_Replacer.zip")
         os.system("del Texture_Replacer.zip")
         with contextlib.suppress(FileExistsError):
@@ -295,7 +315,7 @@ def install_TextureReplacer():
         shutil.move("Texture_Replacer.dll", "BepInEx/plugins")
         os.system("del Texture_Replacer_il2cpp.dll")
     elif arch in ["il2cpp_64", "il2cpp_86"]:
-        download_url("https://attachments.f95zone.to/2023/01/2332348_Texture_Replacer_v1.0.4.1.zip", "Texture_Replacer.zip")
+        download_url(links["TEXTUREREPLACER"], "Texture_Replacer.zip")
         unzip("Texture_Replacer.zip")
         os.system("del Texture_Replacer.zip")
         with contextlib.suppress(FileExistsError):

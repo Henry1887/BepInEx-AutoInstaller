@@ -8,14 +8,15 @@ LICENSE file in the root directory of this source tree.
 
 
 
+
 import contextlib
 import sys
 import zipfile
 import os
 import shutil
-import win32file
 import requests
 import json
+import win32file
 from rich.console import Console
 
 console = Console()
@@ -52,11 +53,7 @@ if not os.path.isfile(game_exe):
     input("Press Enter to continue...")
     sys.exit(0)
 
-if os.path.isfile("AutoInstaller-config.json"):
-    with open("AutoInstaller-config.json", "r") as Config:
-        links = json.load(Config)
-else:
-    links = {
+links = {
         "BEPINEXIL2CPP64": "https://builds.bepinex.dev/projects/bepinex_be/577/BepInEx_UnityIL2CPP_x64_ec79ad0_6.0.0-be.577.zip",
         "BEPINEXIL2CPP86": "https://builds.bepinex.dev/projects/bepinex_be/577/BepInEx_UnityIL2CPP_x86_ec79ad0_6.0.0-be.577.zip",
         "BEPINEX64": "https://github.com/BepInEx/BepInEx/releases/download/v5.4.21/BepInEx_x64_5.4.21.0.zip",
@@ -77,34 +74,34 @@ else:
         "UNITYEXPLORERBE5IL2CPP": "https://github.com/sinai-dev/UnityExplorer/releases/latest/download/UnityExplorer.BepInEx.Il2Cpp.zip",
         "UNITYEXPLORERBE6": "https://github.com/sinai-dev/UnityExplorer/releases/download/4.9.0/UnityExplorer.BepInEx6.Mono.zip",
         "UNITYEXPLORERBE6IL2CPP": "https://github.com/sinai-dev/UnityExplorer/releases/download/4.9.0/UnityExplorer.BepInEx.IL2CPP.zip",
-        "TEXTUREREPLACER": "https://attachments.f95zone.to/2023/06/2692158_Texture_Replacer_plugin_v1.0.5.1.zip"
+        "TEXTUREREPLACER": "https://attachments.f95zone.to/2023/06/2692158_Texture_Replacer_plugin_v1.0.5.1.zip",
+        "ES3SAVEHOOK": "https://cdn.discordapp.com/attachments/1128766686275837963/1130208981307117669/ES3SaveHook.zip"
     }
+
+if os.path.isfile("AutoInstaller-config.json"):
+    with open("AutoInstaller-config.json", "r") as Config:
+        new_links = json.load(Config)
+    links |= new_links
+else:
     with open("AutoInstaller-config.json", "w") as Config:
         json.dump(links, Config)
 
 def determine_arch() -> str:
-    il2cpp = bool(os.path.isfile("GameAssembly.dll"))
-    bit64 = False
-    if os.path.isfile("UnityCrashHandler64.exe"):
-        bit64 = True
-    elif not os.path.isfile("UnityCrashHandler32.exe"):
-        bit64 = win32file.GetBinaryType(game_exe) != win32file.SCS_32BIT_BINARY
-    if not il2cpp and not bit64:
-        return "mono_86"
-    elif not il2cpp:
-        return "mono_64"
-    elif not bit64:
-        return "il2cpp_86"
-    else:
-        return "il2cpp_64"
-
+    match (os.path.isfile("GameAssembly.dll"), win32file.GetBinaryType(game_exe) != win32file.SCS_32BIT_BINARY):
+        case (False, True):
+            return "mono_64"
+        case (False, False):
+            return "mono_86"
+        case (True, True):
+            return "il2cpp_64"
+        case (True, False):
+            return "il2cpp_86"
 
 def download_url(url, save_path, chunk_size=128):
     r = requests.get(url, stream=True)
     with open(save_path, 'wb') as fd:
         for chunk in r.iter_content(chunk_size=chunk_size):
             fd.write(chunk)
-
 
 def download_universaldemosaic():
     if os.path.isfile("BepInEx/plugins/DumbRendererDemosaic.dll") or os.path.isfile("BepInEx/plugins/DumbRendererDemosaicIl2Cpp.dll"):
@@ -114,88 +111,62 @@ def download_universaldemosaic():
     with contextlib.suppress(FileExistsError):
         os.mkdir("Bepinex/plugins")
     if arch in ["mono_64", "mono_86"]:
-        install_universaldemosaic_9(
-            links["UNIVERSALUNITYDEMOSAIC"],
-            "DumbRendererDemosaic.dll",
-        )
+        download_url(links["UNIVERSALUNITYDEMOSAIC"], "UniversalDemosaic.zip")
+        unzip("UniversalDemosaic.zip")
+        os.system("del UniversalDemosaic.zip")
+        shutil.move("DumbRendererDemosaic.dll", "BepInEx/plugins")
         os.system("del DumbTypeDemosaic.dll")
         os.system("del MaterialReplaceDemosaic.dll")
         os.system("del CubismModelDemosaic.dll")
         os.system("del CombinedMeshDemosaic.dll")
     elif arch in ["il2cpp_64", "il2cpp_86"]:
-        install_universaldemosaic_9(
-            links["UNIVERSALUNITYDEMOSAICIL2CPP"],
-            "DumbRendererDemosaicIl2Cpp.dll",
-        )
-    else:
-        sys.exit("Something went wrong&&&")
-    console.print("UniversalDemosaic installed!", style="green on black")
-
-def install_universaldemosaic_9(arg0, arg1):
-    download_url(arg0, "UniversalDemosaic.zip")
-    unzip("UniversalDemosaic.zip")
-    os.system("del UniversalDemosaic.zip")
-    shutil.move(arg1, "BepInEx/plugins")
+        download_url(links["UNIVERSALUNITYDEMOSAICIL2CPP"], "UniversalDemosaic.zip")
+        unzip("UniversalDemosaic.zip")
+        os.system("del UniversalDemosaic.zip")
+        shutil.move("DumbRendererDemosaicIl2Cpp.dll", "BepInEx/plugins")
     os.system("del LICENSE")
     os.system("del README.md")
-
+    console.print("UniversalDemosaic installed!", style="green on black")
 
 def download_bepinex6():
     if os.path.exists("BepInEx"):
         console.print("A Bepinex version is already installed!",
                       style="yellow on black")
         return
-    if arch == "il2cpp_64":
-        download_url(links["BEPINEX6IL2CPP64"], "Bepinex.zip")
-        unzip("Bepinex.zip")
-        os.system("del Bepinex.zip")
-    elif arch == "il2cpp_86":
-        download_url(links["BEPINEX6IL2CPP86"], "Bepinex.zip")
-        unzip("Bepinex.zip")
-        os.system("del Bepinex.zip")
-    elif arch == "mono_64":
-        download_url(links["BEPINEX664"], "Bepinex.zip")
-        unzip("Bepinex.zip")
-        os.system("del Bepinex.zip")
-    elif arch == "mono_86":
-        download_url(links["BEPINEX686"], "Bepinex.zip")
-        unzip("Bepinex.zip")
-        os.system("del Bepinex.zip")
-    else:
-        sys.exit("Something went wrong,,,")
+    match arch:
+        case "il2cpp_64":
+            download_url(links["BEPINEX6IL2CPP64"], "Bepinex.zip")
+        case "il2cpp_86":
+            download_url(links["BEPINEX6IL2CPP86"], "Bepinex.zip")
+        case "mono_64":
+            download_url(links["BEPINEX664"], "Bepinex.zip")
+        case "mono_86":
+            download_url(links["BEPINEX686"], "Bepinex.zip")
+    unzip("Bepinex.zip")
+    os.system("del Bepinex.zip")
     console.print("Bepinex 6 installed!", style="green on black")
-
 
 def download_bepinex():
     if os.path.exists("BepInEx"):
         console.print("A Bepinex version is already installed!",
                       style="yellow on black")
         return
-    if arch == "mono_64":
-        download_url(links["BEPINEX64"], "Bepinex.zip")
-        unzip("Bepinex.zip")
-        os.system("del Bepinex.zip")
-    elif arch == "mono_86":
-        download_url(links["BEPINEX86"], "Bepinex.zip")
-        unzip("Bepinex.zip")
-        os.system("del Bepinex.zip")
-    elif arch == "il2cpp_64":
-        download_url(links["BEPINEXIL2CPP64"], "Bepinex.zip")
-        unzip("Bepinex.zip")
-        os.system("del Bepinex.zip")
-    elif arch == "il2cpp_86":
-        download_url(links["BEPINEXIL2CPP86"], "Bepinex.zip")
-        unzip("Bepinex.zip")
-        os.system("del Bepinex.zip")
-    else:
-        sys.exit("Something went wrong!!!")
+    match arch:
+        case "mono_64":
+            download_url(links["BEPINEX64"], "Bepinex.zip")
+        case "mono_86":
+            download_url(links["BEPINEX86"], "Bepinex.zip")
+        case "il2cpp_64":
+            download_url(links["BEPINEXIL2CPP64"], "Bepinex.zip")
+        case "il2cpp_86":
+            download_url(links["BEPINEXIL2CPP86"], "Bepinex.zip")
+    unzip("Bepinex.zip")
+    os.system("del Bepinex.zip")
     console.print("Bepinex installed!", style="green on black")
-
 
 def unzip(file: str):
     with zipfile.ZipFile(file, 'r') as zip_ref:
         zip_ref.extractall()
-
 
 def download_autotranslator():
     if os.path.exists("BepInEx/plugins/XUnity.AutoTranslator"):
@@ -203,22 +174,12 @@ def download_autotranslator():
                       style="yellow on black")
         return
     if arch in ["mono_64", "mono_86"]:
-        install_autotranslator_7(
-            links["AUTOTRANSLATOR"]
-        )
+        download_url(links["AUTOTRANSLATOR"], "AutoTranslate.zip")
     elif arch in ["il2cpp_64", "il2cpp_86"]:
-        install_autotranslator_7(
-            links["AUTOTRANSLATORIL2CPP"]
-        )
-    else:
-        sys.exit("Something went wrong***")
-    console.print("AutoTranslator Plugin installed!", style="green on black")
-
-def install_autotranslator_7(arg0):
-    download_url(arg0, "AutoTranslate.zip")
+        download_url(links["AUTOTRANSLATORIL2CPP"], "AutoTranslate.zip")
     unzip("AutoTranslate.zip")
     os.system("del AutoTranslate.zip")
-
+    console.print("AutoTranslator Plugin installed!", style="green on black")
 
 def download_unityexplorer():
     if os.path.exists("BepInEx/plugins/sinai-dev-UnityExplorer"):
@@ -227,56 +188,39 @@ def download_unityexplorer():
         return
     try:
         if arch in ["mono_64", "mono_86"]:
-            install_unityexplorer_8(
-                links["UNITYEXPLORERBE5"],
-                "plugins/sinai-dev-UnityExplorer/",
-                "plugins",
-            )
+            download_url(links["UNITYEXPLORERBE5"], "UnityExplorer.zip")
+            unzip("UnityExplorer.zip")
+            os.system("del UnityExplorer.zip")
+            shutil.move("plugins/sinai-dev-UnityExplorer/", "BepInEx/plugins")
+            os.rmdir("plugins")
         elif arch in ["il2cpp_64", "il2cpp_86"]:
-            install_unityexplorer_8(
-                links["UNITYEXPLORERBE5IL2CPP"],
-                "UnityExplorer.BepInEx.IL2CPP/plugins/sinai-dev-UnityExplorer/",
-                "UnityExplorer.BepInEx.IL2CPP",
-            )
-        else:
-            sys.exit("Something went wrong///")
+            download_url(links["UNITYEXPLORERBE5IL2CPP"], "UnityExplorer.zip")
+            unzip("UnityExplorer.zip")
+            os.system("del UnityExplorer.zip")
+            shutil.move("UnityExplorer.BepInEx.IL2CPP/plugins/sinai-dev-UnityExplorer/", "BepInEx/plugins")
+            os.rmdir("UnityExplorer.BepInEx.IL2CPP/plugins")
+            os.rmdir("UnityExplorer.BepInEx.IL2CPP")
         console.print("UnityExplorer Plugin installed!",
                       style="green on black")
     except PermissionError:
         console.print("UnityExplorer Plugin installed!",
                       style="green on black")
 
-def install_unityexplorer_8(arg0, arg1, arg2):
-    download_url(arg0, "UnityExplorer.zip")
-    unzip("UnityExplorer.zip")
-    os.system("del UnityExplorer.zip")
-    shutil.move(arg1, "BepInEx/plugins")
-    if arg2 == "UnityExplorer.BepInEx.IL2CPP":
-        os.rmdir("UnityExplorer.BepInEx.IL2CPP/plugins")
-    os.rmdir(arg2)
-
 def install_BEBuild6():
     if os.path.exists("BepInEx"):
         console.print("Bepinex is already installed!", style="yellow on black")
         return
-    if arch == "mono_64":
-        download_url(links["BEPINEXBEBUILD64"], "Bepinex.zip")
-        unzip("Bepinex.zip")
-        os.system("del Bepinex.zip")
-    elif arch == "mono_86":
-        download_url(links["BEPINEXBEBUILD86"], "Bepinex.zip")
-        unzip("Bepinex.zip")
-        os.system("del Bepinex.zip")
-    elif arch == "il2cpp_64":
-        download_url(links["BEPINEXBEBUILDIL2CPP64"], "Bepinex.zip")
-        unzip("Bepinex.zip")
-        os.system("del Bepinex.zip")
-    elif arch == "il2cpp_86":
-        download_url(links["BEPINEXBEBUILDIL2CPP86"], "Bepinex.zip")
-        unzip("Bepinex.zip")
-        os.system("del Bepinex.zip")
-    else:
-        sys.exit("Something went wrong!!!")
+    match arch:
+        case "mono_64":
+            download_url(links["BEPINEXBEBUILD64"], "Bepinex.zip")
+        case "mono_86":
+            download_url(links["BEPINEXBEBUILD86"], "Bepinex.zip")
+        case "il2cpp_64":
+            download_url(links["BEPINEXBEBUILDIL2CPP64"], "Bepinex.zip")
+        case "il2cpp_86":
+            download_url(links["BEPINEXBEBUILDIL2CPP86"], "Bepinex.zip")
+    unzip("Bepinex.zip")
+    os.system("del Bepinex.zip")
     console.print("Bepinex 6 installed!", style="green on black")
 
 def install_UnityExplorer6():
@@ -297,8 +241,6 @@ def install_UnityExplorer6():
         shutil.move("UnityExplorer.BepInEx.IL2CPP/plugins/sinai-dev-UnityExplorer", "BepInEx/plugins")
         os.rmdir("UnityExplorer.BepInEx.IL2CPP/plugins")
         os.rmdir("UnityExplorer.BepInEx.IL2CPP")
-    else:
-        sys.exit("Something went wrong???")
     console.print("UnityExplorer Plugin installed!", style="green on black")
 
 def install_TextureReplacer():
@@ -322,13 +264,25 @@ def install_TextureReplacer():
             os.mkdir("BepInEx/plugins")
         shutil.move("Texture_Replacer_il2cpp.dll", "BepInEx/plugins")
         os.system("del Texture_Replacer.dll")
-    else:
-        sys.exit("Something went wrong???")
     console.print("Texture Replacer Plugin installed!", style="green on black")
+
+def install_ES3SaveHook():
+    if os.path.isfile("BepInEx/plugins/ES3SaveHook.dll"):
+        console.print("ES3SaveHook Plugin is already Installed!",
+                      style="yellow on black")
+        return
+    if arch in ["il2cpp_64", "il2cpp_86"]:
+        download_url(links["ES3SAVEHOOK"], "ES3SaveHook.zip")
+        unzip("ES3SaveHook.zip")
+        os.system("del ES3SaveHook.zip")
+        with contextlib.suppress(FileExistsError):
+            os.mkdir("BepInEx/plugins")
+        shutil.move("ES3SaveHook.dll", "BepInEx/plugins")
+    console.print("ES3SaveHook Plugin installed!", style="green on black")
 
 def main():
     global arch
-    console.rule("[bold blue]BepInEx Installer")
+    console.rule("[bold blue]BepInEx Installer v1.0.4")
     print("")
     console.print(game_exe, style="yellow on black", justify="center")
     console.print("-----", justify="center", style="green on black")
@@ -352,60 +306,72 @@ def main():
                   style="yellow on black")
     console.print("8: Only Bepinex 6 Latest Bleeding Edge Build",
                   justify="center", style="yellow on black")
+    console.print("9: BepInEx 6 Latest Bleeding Edge Build & ES3SaveHook (ONLY IL2CPP)",
+                  justify="center", style="yellow on black")
     a = int(input(""))
     os.system("cls")
-    if a == 1:
-        with console.status("Installing BepInEx 5..."):
-            download_bepinex()
-        with console.status("Installing AutoTranslator Plugin..."):
-            download_autotranslator()
-        console.print("Done!", style="green on black")
-    elif a == 2:
-        with console.status("Installing BepInEx 5..."):
-            download_bepinex()
-        with console.status("Installing UnityExplorer Plugin..."):
-            download_unityexplorer()
-        console.print("Done!", style="green on black")
-    elif a == 3:
-        if arch in ["mono_64", "mono_86"]:
+    match a:
+        case 1:
             with console.status("Installing BepInEx 5..."):
                 download_bepinex()
-        else:
-            with console.status("Installing Bepinex 6..."):
-                download_bepinex6()
-        with console.status("Installing DumbRendererDemosaic..."):
-            download_universaldemosaic()
-        console.print("Done!", style="green on black")
-    elif a == 4:
-        if arch in ["mono_64", "mono_86"]:
+            with console.status("Installing AutoTranslator Plugin..."):
+                download_autotranslator()
+            console.print("Done!", style="green on black")
+        case 2:
             with console.status("Installing BepInEx 5..."):
                 download_bepinex()
-        else:
+            with console.status("Installing UnityExplorer Plugin..."):
+                download_unityexplorer()
+            console.print("Done!", style="green on black")
+        case 3:
+            if arch in ["mono_64", "mono_86"]:
+                with console.status("Installing BepInEx 5..."):
+                    download_bepinex()
+            else:
+                with console.status("Installing Bepinex 6..."):
+                    download_bepinex6()
+            with console.status("Installing DumbRendererDemosaic..."):
+                download_universaldemosaic()
+            console.print("Done!", style="green on black")
+        case 4:
+            if arch in ["mono_64", "mono_86"]:
+                with console.status("Installing BepInEx 5..."):
+                    download_bepinex()
+            else:
+                with console.status("Installing Bepinex 6..."):
+                    download_bepinex6()
+            with console.status("Installing Texture Replacer Plugin..."):
+                install_TextureReplacer()
+            console.print("Done!", style="green on black")
+        case 5:
             with console.status("Installing Bepinex 6..."):
                 download_bepinex6()
-        with console.status("Installing Texture Replacer Plugin..."):
-            install_TextureReplacer()
-        console.print("Done!", style="green on black")
-    elif a == 5:
-        with console.status("Installing Bepinex 6..."):
-            download_bepinex6()
-        with console.status("Installing UnityExplorer Plugin..."):
-            install_UnityExplorer6()
-        console.print("Done!", style="green on black")
-    elif a == 6:
-        with console.status("Installing BepInEx 5..."):
-            download_bepinex()
-        console.print("Done!", style="green on black")
-    elif a == 7:
-        with console.status("Installing BepiInEx 6..."):
-            download_bepinex6()
-        console.print("Done!", style="green on black")
-    elif a == 8:
-        with console.status("Installing Bepinex 6 Latest Bleeding Edge Build..."):
-            install_BEBuild6()
-        console.print("Done!", style="green on black")
-    else:
-        console.print("Invalid Input!", style="red on black")
+            with console.status("Installing UnityExplorer Plugin..."):
+                install_UnityExplorer6()
+            console.print("Done!", style="green on black")
+        case 6:
+            with console.status("Installing BepInEx 5..."):
+                download_bepinex()
+            console.print("Done!", style="green on black")
+        case 7:
+            with console.status("Installing BepiInEx 6..."):
+                download_bepinex6()
+            console.print("Done!", style="green on black")
+        case 8:
+            with console.status("Installing Bepinex 6 Latest Bleeding Edge Build..."):
+                install_BEBuild6()
+            console.print("Done!", style="green on black")
+        case 9:
+            if arch in ["il2cpp_64", "il2cpp_86"]:
+                with console.status("Installing Bepinex 6 Latest Bleeding Edge Build..."):
+                    install_BEBuild6()
+                with console.status("Installing ES3SaveHook Plugin..."):
+                    install_ES3SaveHook()
+                console.print("Done!", style="green on black")
+            else:
+                console.print("Only IL2CPP is supported!", style="red on black")
+        case _:
+            console.print("Invalid Input!", style="red on black")
     input("Press Enter to continue...")
 
 

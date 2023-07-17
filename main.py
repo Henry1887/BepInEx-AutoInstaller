@@ -75,8 +75,8 @@ links = {
         "UNITYEXPLORERBE6": "https://github.com/sinai-dev/UnityExplorer/releases/download/4.9.0/UnityExplorer.BepInEx6.Mono.zip",
         "UNITYEXPLORERBE6IL2CPP": "https://github.com/sinai-dev/UnityExplorer/releases/download/4.9.0/UnityExplorer.BepInEx.IL2CPP.zip",
         "TEXTUREREPLACER": "https://attachments.f95zone.to/2023/06/2692158_Texture_Replacer_plugin_v1.0.5.1.zip",
-        "ES3SAVEHOOK": "https://cdn.discordapp.com/attachments/1128766686275837963/1130514609963532381/ES3SaveHook_IL2CPP.zip",
-        "ES3SAVEHOOKIL2CPP": "https://cdn.discordapp.com/attachments/1128766686275837963/1130513994663342221/ES3SaveHook_Mono.zip"
+        "ES3SAVEHOOKIL2CPP": "https://cdn.discordapp.com/attachments/1128766686275837963/1130514609963532381/ES3SaveHook_IL2CPP.zip",
+        "ES3SAVEHOOK": "https://cdn.discordapp.com/attachments/1128766686275837963/1130513994663342221/ES3SaveHook_Mono.zip"
     }
 
 if os.path.isfile("AutoInstaller-config.json"):
@@ -273,9 +273,9 @@ def install_ES3SaveHook():
                       style="yellow on black")
         return
     if arch in ["il2cpp_64", "il2cpp_86"]:
-        download_url(links["ES3SAVEHOOK"], "ES3SaveHook.zip")
-    else:
         download_url(links["ES3SAVEHOOKIL2CPP"], "ES3SaveHook.zip")
+    else:
+        download_url(links["ES3SAVEHOOK"], "ES3SaveHook.zip")
     unzip("ES3SaveHook.zip")
     os.system("del ES3SaveHook.zip")
     with contextlib.suppress(FileExistsError):

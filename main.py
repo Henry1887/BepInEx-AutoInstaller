@@ -75,7 +75,8 @@ links = {
         "UNITYEXPLORERBE6": "https://github.com/sinai-dev/UnityExplorer/releases/download/4.9.0/UnityExplorer.BepInEx6.Mono.zip",
         "UNITYEXPLORERBE6IL2CPP": "https://github.com/sinai-dev/UnityExplorer/releases/download/4.9.0/UnityExplorer.BepInEx.IL2CPP.zip",
         "TEXTUREREPLACER": "https://attachments.f95zone.to/2023/06/2692158_Texture_Replacer_plugin_v1.0.5.1.zip",
-        "ES3SAVEHOOK": "https://cdn.discordapp.com/attachments/1128766686275837963/1130208981307117669/ES3SaveHook.zip"
+        "ES3SAVEHOOK": "https://cdn.discordapp.com/attachments/1128766686275837963/1130514609963532381/ES3SaveHook_IL2CPP.zip",
+        "ES3SAVEHOOKIL2CPP": "https://cdn.discordapp.com/attachments/1128766686275837963/1130513994663342221/ES3SaveHook_Mono.zip"
     }
 
 if os.path.isfile("AutoInstaller-config.json"):
@@ -273,16 +274,18 @@ def install_ES3SaveHook():
         return
     if arch in ["il2cpp_64", "il2cpp_86"]:
         download_url(links["ES3SAVEHOOK"], "ES3SaveHook.zip")
-        unzip("ES3SaveHook.zip")
-        os.system("del ES3SaveHook.zip")
-        with contextlib.suppress(FileExistsError):
-            os.mkdir("BepInEx/plugins")
-        shutil.move("ES3SaveHook.dll", "BepInEx/plugins")
+    else:
+        download_url(links["ES3SAVEHOOKIL2CPP"], "ES3SaveHook.zip")
+    unzip("ES3SaveHook.zip")
+    os.system("del ES3SaveHook.zip")
+    with contextlib.suppress(FileExistsError):
+        os.mkdir("BepInEx/plugins")
+    shutil.move("ES3SaveHook.dll", "BepInEx/plugins")
     console.print("ES3SaveHook Plugin installed!", style="green on black")
 
 def main():
     global arch
-    console.rule("[bold blue]BepInEx Installer v1.0.4")
+    console.rule("[bold blue]BepInEx Installer v1.0.5")
     print("")
     console.print(game_exe, style="yellow on black", justify="center")
     console.print("-----", justify="center", style="green on black")
@@ -301,12 +304,12 @@ def main():
                     justify="center", style="yellow on black")
     console.print("5: Bepinex 6 & UnityExplorer",
                   justify="center", style="yellow on black")
-    console.print("6: Only Bepinex 5", justify="center", style="yellow on black")
-    console.print("7: Only Bepinex 6", justify="center",
-                  style="yellow on black")
-    console.print("8: Only Bepinex 6 Latest Bleeding Edge Build",
+    console.print("6: BepInEx 6 Latest Bleeding Edge Build & ES3SaveHook",
                   justify="center", style="yellow on black")
-    console.print("9: BepInEx 6 Latest Bleeding Edge Build & ES3SaveHook (ONLY IL2CPP)",
+    console.print("7: Only Bepinex 5", justify="center", style="yellow on black")
+    console.print("8: Only Bepinex 6", justify="center",
+                  style="yellow on black")
+    console.print("9: Only Bepinex 6 Latest Bleeding Edge Build",
                   justify="center", style="yellow on black")
     a = int(input(""))
     os.system("cls")
@@ -350,26 +353,23 @@ def main():
                 install_UnityExplorer6()
             console.print("Done!", style="green on black")
         case 6:
+            with console.status("Installing Bepinex 6 Latest Bleeding Edge Build..."):
+                install_BEBuild6()
+            with console.status("Installing ES3SaveHook Plugin..."):
+                install_ES3SaveHook()
+            console.print("Done!", style="green on black")
+        case 7:
             with console.status("Installing BepInEx 5..."):
                 download_bepinex()
             console.print("Done!", style="green on black")
-        case 7:
+        case 8:
             with console.status("Installing BepiInEx 6..."):
                 download_bepinex6()
             console.print("Done!", style="green on black")
-        case 8:
+        case 9:
             with console.status("Installing Bepinex 6 Latest Bleeding Edge Build..."):
                 install_BEBuild6()
             console.print("Done!", style="green on black")
-        case 9:
-            if arch in ["il2cpp_64", "il2cpp_86"]:
-                with console.status("Installing Bepinex 6 Latest Bleeding Edge Build..."):
-                    install_BEBuild6()
-                with console.status("Installing ES3SaveHook Plugin..."):
-                    install_ES3SaveHook()
-                console.print("Done!", style="green on black")
-            else:
-                console.print("Only IL2CPP is supported!", style="red on black")
         case _:
             console.print("Invalid Input!", style="red on black")
     input("Press Enter to continue...")

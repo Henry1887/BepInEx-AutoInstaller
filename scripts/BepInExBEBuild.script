@@ -1,0 +1,25 @@
+# Installation script for the latest Bleeding Edge Build of BepInEx
+
+GLOBAL
+skipifdirectorynotexists=BepInEx=1
+log=BepInEx already installed!
+skipifdirectoryexists=BepInEx=6
+log=Installing BepInEx...
+
+IL2CPP64
+download=https://builds.bepinex.dev/projects/bepinex_be/670/BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.670%2B42a6727.zip=BepInEx.zip
+
+IL2CPP32
+download=https://builds.bepinex.dev/projects/bepinex_be/670/BepInEx-Unity.IL2CPP-win-x86-6.0.0-be.670%2B42a6727.zip=BepInEx.zip
+
+MONO64
+download=https://builds.bepinex.dev/projects/bepinex_be/670/BepInEx-Unity.Mono-win-x64-6.0.0-be.670%2B42a6727.zip=BepInEx.zip
+
+MONO32
+download=https://builds.bepinex.dev/projects/bepinex_be/670/BepInEx-Unity.Mono-win-x86-6.0.0-be.670%2B42a6727.zip=BepInEx.zip
+
+GLOBAL
+unzip=BepInEx.zip
+delete=BepInEx.zip
+create=BepInEx/plugins/
+log=Installed BepInEx!

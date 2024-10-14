@@ -1,0 +1,26 @@
+# Installation script for the UnityExplorer plugin(BepInEx5)
+
+DEPENDENCYMONO=BepInEx5.script
+DEPENDENCYIL2CPP=BepInEx5.script
+
+MONO
+skipifdirectorynotexists=BepInex/plugins/sinai-dev-UnityExplorer=1
+log=UnityExplorer already installed!
+skipifdirectoryexists=BepInex/plugins/sinai-dev-UnityExplorer=6
+download=https://github.com/sinai-dev/UnityExplorer/releases/latest/download/UnityExplorer.BepInEx5.Mono.zip=UnityExplorer.zip
+unzip=UnityExplorer.zip
+delete=UnityExplorer.zip
+move=plugins/sinai-dev-UnityExplorer=BepInEx/plugins/
+delete=plugins
+log=UnityExplorer installed!
+
+IL2CPP
+skipifdirectorynotexists=BepInex/plugins/sinai-dev-UnityExplorer=1
+log=UnityExplorer already installed!
+skipifdirectoryexists=BepInex/plugins/sinai-dev-UnityExplorer=6
+download=https://github.com/sinai-dev/UnityExplorer/releases/latest/download/UnityExplorer.BepInEx.Il2Cpp.zip=UnityExplorer.zip
+unzip=UnityExplorer.zip
+delete=UnityExplorer.zip
+move=UnityExplorer.BepInEx.IL2CPP/plugins/sinai-dev-UnityExplorer=BepInEx/plugins/
+delete=UnityExplorer.BepInEx.IL2CPP
+log=UnityExplorer installed!

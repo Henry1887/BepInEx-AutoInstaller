@@ -1,0 +1,32 @@
+# Installation script for the UniversalDemosaic(DumbRendererDemosaic) plugin
+
+DEPENDENCYIL2CPP=BepInEx6.script
+DEPENDENCYMONO=BepInEx5.script
+
+MONO
+skipiffilenotexists=BepInEx/plugins/DumbRendererDemosaic.dll=1
+log=UniversalUnityDemosaic already installed!
+skipiffileexists=BepInEx/plugins/DumbRendererDemosaic.dll=11
+download=https://github.com/ManlyMarco/UniversalUnityDemosaics/releases/download/v1.5/UniversalUnityDemosaics_BepInEx5_v1.5.zip=UniversalUnityDemosaic.zip
+unzip=UniversalUnityDemosaic.zip
+delete=UniversalUnityDemosaic.zip
+move=DumbRendererDemosaic.dll=BepInEx/plugins/
+delete=DumbTypeDemosaic.dll
+delete=MaterialReplaceDemosaic.dll
+delete=CubismModelDemosaic.dll
+delete=CombinedMeshDemosaic.dll
+delete=LICENSE
+delete=README.md
+log=UniversalUnityDemosaic installed!
+
+IL2CPP
+skipiffilenotexists=BepInEx/plugins/DumbRendererDemosaicIl2Cpp.dll=1
+log=UniversalUnityDemosaic already installed!
+skipiffileexists=BepInEx/plugins/DumbRendererDemosaic.dll=7
+download=https://github.com/ManlyMarco/UniversalUnityDemosaics/releases/download/v1.5/UniversalUnityDemosaics_BepInEx6_IL2CPP_v1.5.zip=UniversalUnityDemosaic.zip
+unzip=UniversalDemosaic.zip
+delete=UniversalUnityDemosaic.zip
+delete=LICENSE
+delete=README.md
+move=DumbRendererDemosaicIl2Cpp.dll=BepInEx/plugins/
+log=UniversalUnityDemosaic installed!

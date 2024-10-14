@@ -1,0 +1,25 @@
+# Installation script for BepInEx5
+
+GLOBAL
+skipifdirectorynotexists=BepInEx=1
+log=BepInEx already installed!
+skipifdirectoryexists=BepInEx=6
+log=Installing BepInEx...
+
+IL2CPP64
+download=https://builds.bepinex.dev/projects/bepinex_be/577/BepInEx_UnityIL2CPP_x64_ec79ad0_6.0.0-be.577.zip=BepInEx.zip
+
+IL2CPP32
+download=https://builds.bepinex.dev/projects/bepinex_be/577/BepInEx_UnityIL2CPP_x86_ec79ad0_6.0.0-be.577.zip=BepInEx.zip
+
+MONO64
+download=https://github.com/BepInEx/BepInEx/releases/download/v5.4.21/BepInEx_x64_5.4.21.0.zip=BepInEx.zip
+
+MONO32
+download=https://github.com/BepInEx/BepInEx/releases/download/v5.4.21/BepInEx_x86_5.4.21.0.zip=BepInEx.zip
+
+GLOBAL
+unzip=BepInEx.zip
+delete=BepInEx.zip
+create=BepInEx/plugins/
+log=Installed BepInEx!

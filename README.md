@@ -1,18 +1,19 @@
 # BepInEx-AutoInstaller
 
-![Screenshot 2023-04-20 192702](https://user-images.githubusercontent.com/130381580/234021858-325977b6-dfb9-41ee-8ba3-52157a9201ae.png)
-
-Warning: Until i update it this is outdatet
+![image](https://github.com/user-attachments/assets/296542d8-10e6-498b-a1a0-1f176d06c009)
 
 This is a Tool that automatically installs the correct BepInEx version onto ur Unity Game with some optional plugins.
 
-main.py has been converted to main.exe with auto-py-to-exe
+# How to build it
+
+Use auto-py-to-exe to convert it into an executable.
 
 # How to use it
 
-1. Move the main.exe or main.py file into the same folder as the game (Where the Games Executable is located, theres a "{Game Name}.exe" file and a "{Game Name}_Data" folder in the Games Directory)
-2. Execute the main.exe or open a command prompt in the same folder and type "python main.py" and follow the on screen instructions.
+1. Run the Tool and select the Games Executable
+2. Select the Script you want to run in the Dropdown
+3. Hit Install
 
-# Info
+# Info on the scripts
 
-I am not associated with BepInEx or any of the Plugin Developers. This is only a tool for making peoples lifes easier and i am not profiting financially with this. This also means i cannot give you much help with problems for BepInEx and any Plugin, though i will do my best. As the License states you can use/modify my code in any way u want. If u have suggestions for features im all ears!
+You can also add support for other plugins yourself by writing a script yourself. For now i dont have documentation for writing your own scripts but you can always refer to the already written Scripts or the source code that interprets these scripts.

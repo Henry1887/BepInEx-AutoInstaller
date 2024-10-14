@@ -1,0 +1,26 @@
+# Installation script for the TextureReplacer plugin
+
+DEPENDENCYMONO=BepInEx5.script
+DEPENDENCYIL2CPP=BepInEx6.script
+
+IL2CPP
+skipiffilenotexists=BepInEx/plugins/Texture_Replacer_il2cpp.dll=1
+log=Texture Replacer already installed!
+skipiffileexists=BepInEx/plugins/Texture_Replacer_il2cpp.dll=6
+download=https://attachments.f95zone.to/2023/06/2692158_Texture_Replacer_plugin_v1.0.5.1.zip=TextureReplacer.zip
+unzip=TextureReplacer.zip
+delete=TextureReplacer.zip
+move=Texture_Replacer_il2cpp.dll=BepInEx/plugins/
+delete=Texture_Replacer.dll
+log=Texture Replacer installed!
+
+MONO
+skipiffilenotexists=BepInEx/plugins/Texture_Replacer.dll=1
+log=Texture Replacer already installed!
+skipiffileexists=BepInEx/plugins/Texture_Replacer.dll=6
+download=https://attachments.f95zone.to/2023/06/2692158_Texture_Replacer_plugin_v1.0.5.1.zip=TextureReplacer.zip
+unzip=TextureReplacer.zip
+delete=TextureReplacer.zip
+move=Texture_Replacer.dll=BepInEx/plugins/
+delete=Texture_Replacer_il2cpp.dll
+log=Texture Replacer installed!

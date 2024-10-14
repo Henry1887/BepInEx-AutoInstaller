@@ -1,3 +1,4 @@
-pywin32==305
-Requests==2.28.2
-rich==13.3.4
+PyQt6==6.7.1
+PyQt6_sip==13.8.0
+pywin32==308
+Requests==2.32.3

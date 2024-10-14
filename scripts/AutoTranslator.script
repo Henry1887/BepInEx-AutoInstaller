@@ -1,0 +1,20 @@
+# Installation Script for the AutoTranslator plugin
+
+DEPENDENCYMONO=BepInEx5.script
+DEPENDENCYIL2CPP=BepInEx5.script
+
+GLOBAL
+skipifdirectorynotexists=BepInEx/plugins/XUnity.AutoTranslator=1
+log=AutoTranslator already installed!
+skipifdirectoryexists=BepInEx/plugins/XUnity.AutoTranslator=4
+
+IL2CPP
+download=https://github.com/bbepis/XUnity.AutoTranslator/releases/download/v5.0.0/XUnity.AutoTranslator-BepInEx-IL2CPP-5.0.0.zip=AutoTranslator.zip
+
+MONO
+download=https://github.com/bbepis/XUnity.AutoTranslator/releases/download/v5.0.0/XUnity.AutoTranslator-BepInEx-5.0.0.zip=AutoTranslator.zip
+
+GLOBAL
+unzip=AutoTranslator.zip
+delete=AutoTranslator.zip
+log=AutoTranslator installed!
